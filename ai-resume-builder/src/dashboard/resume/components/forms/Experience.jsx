@@ -25,7 +25,7 @@ function Experience() {
     const [loading,setLoading]=useState(false);
 
     useEffect(()=>{
-        setExperinceList(resumeInfo?.Experience ?? []);
+        setExperinceList(resumeInfo?.experience ?? []);
         
     },[])
 
@@ -64,7 +64,7 @@ function Experience() {
     useEffect(()=>{
         setResumeInfo({
             ...resumeInfo,
-            Experience:experinceList
+            experience:experinceList
         });
      
     },[experinceList]);
@@ -74,9 +74,12 @@ function Experience() {
         setLoading(true)
         const data={
             data:{
-                Experience:experinceList.map(({ id, ...rest }) => rest)
+                experience:experinceList.map(({ id, ...rest }) => rest)
             }
         }
+        console.log(JSON.stringify(data, null, 2)); // <- Pindah ke sini
+        console.log('resumeId:', params?.resumeId)
+        console.log('Sending to Strapi:', { data: experinceList });
 
          console.log(experinceList)
 
