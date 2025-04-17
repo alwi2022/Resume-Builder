@@ -26,20 +26,32 @@ function Summery({ enabledNext }) {
 
   const GenerateSummeryFromAI = async () => {
     setLoading(true);
-    const PROMPT = prompt.replace("{jobTitle}", resumeInfo?.jobTitle);
-    console.log(PROMPT);
-    const result = await AIChatSession.sendMessage(PROMPT);
-    const jsonText = await result.response.text();
-    console.log(JSON.parse(result.response.text()));
-    const parsed = JSON.parse(jsonText);
-
-    if (Array.isArray(parsed.summaries)) {
-      setAiGenerateSummeryList(parsed.summaries);
-    } else {
-      console.error("Expected 'summaries' to be an array, but got:", parsed);
-      toast.error("AI response format is incorrect.");
+    try {
+      const PROMPT = prompt.replace("{jobTitle}", resumeInfo?.jobTitle);
+      console.log(PROMPT);
+      const result = await AIChatSession.sendMessage(PROMPT);
+      const jsonText = await result.response.text();
+      console.log(jsonText);
+      const parsed = JSON.parse(jsonText);
+  
+      // Periksa apakah 'summaries' atau 'summary_data' ada dalam respons
+      if (Array.isArray(parsed.summaries)) {
+        setAiGenerateSummeryList(parsed.summaries);
+      } else if (Array.isArray(parsed.summary_data)) {
+        setAiGenerateSummeryList(parsed.summary_data); // Gunakan 'summary_data' jika tersedia
+      } else {
+        console.error("Expected 'summaries' or 'summary_data' to be an array, but got:", parsed);
+        toast.error("AI response format is incorrect.");
+      }
+    } catch (error) {
+      console.error("Error generating AI summary:", error);
+      toast.error("Failed to generate summary from AI.");
+    } finally {
+      setLoading(false); // Pastikan loading selesai setelah operasi selesai
     }
   };
+  
+  
 
   const onSave = (e) => {
     e.preventDefault();
